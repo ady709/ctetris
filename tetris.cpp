@@ -13,7 +13,8 @@
 const int playRows = 21;
 const int playColumns = 10;
 const int blockSize = 25;
-
+const int nextPieceBlockSize = 25;
+const int nextPieceViewBlocks = 4;
 using namespace tetris;
 
 int main(){
@@ -21,7 +22,7 @@ int main(){
 	Model model(playRows, playColumns);
 
 
-	sf::RenderWindow window(sf::VideoMode(playColumns * blockSize, playRows * blockSize), "Tetris", sf::Style::Default);
+	sf::RenderWindow window(sf::VideoMode(playColumns * blockSize + nextPieceBlockSize * nextPieceViewBlocks + 40, playRows * blockSize), "Tetris", sf::Style::Default);
 	View view(model);
 
 
@@ -53,9 +54,11 @@ int main(){
 
 		window.clear();
 
-		view.updatePiece(window, blockSize);
-		view.updateMap(window, blockSize);
-
+		//view.updatePiece(window, blockSize);
+		//view.updateMap(window, blockSize);
+		view.makePiece();
+		view.makeMap();
+		view.drawAll(window);
 
 		window.display();
 

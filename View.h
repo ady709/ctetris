@@ -17,11 +17,18 @@ public:
 	void updatePiece(sf::RenderWindow& window, int blockSize=25);
 	void updateMap(sf::RenderWindow& window, int blockSize=25);
 
+	void makePiece();
+	void makeMap();
+	void makeNextPiece();
+	void map2rect(const std::vector<std::vector<Block>>& blockMap, Pos zeroPoint, int blockSize, std::vector<std::vector<sf::RectangleShape>>& rectMap);
+	void drawAll(sf::RenderWindow& window);
+
 
 private:
 	Model& model;
-	std::vector<sf::RectangleShape> piece;
+	std::vector<std::vector<sf::RectangleShape>> piece;
 	std::vector<std::vector<sf::RectangleShape>> map;
+	std::vector<std::vector<sf::RectangleShape>> nextPiece;
 };
 
 
