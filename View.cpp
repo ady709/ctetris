@@ -7,70 +7,9 @@
 #include "View.h"
 using namespace tetris;
 
-View::View(Model& m) : model(m) {
+View::View(Model& m) : model(m), blockSize(25) {
 
 }
-
-void View::updatePiece(sf::RenderWindow& window, int blockSize){
-	//clear existing
-	piece.clear();
-
-	//make new
-	//reference to piece.map
-	const std::vector<std::vector<Block>>& m = model.getPiece().getMap();
-	// position of the piece
-	Pos p = model.getPiece().getPos();
-	//for each block in map, make rectangle
-	int r=0;
-	for (std::vector<Block> row : m){
-		int c=0;
-		for (Block b : row){
-			if (b.isOccupied()){
-				sf::RectangleShape rect(sf::Vector2f(blockSize, blockSize));
-
-				rect.setPosition((float) (p.c+c)*blockSize, (float) (p.r+r)*blockSize);
-				rect.setFillColor(b.getColor());
-				//piece.push_back(sf::RectangleShape(rect)); //TODO is it needed to save piece rectangles into vector? Would it be needed in future?
-				window.draw(rect);
-
-
-			}
-			++c;
-		}
-		++r;
-	}
-}
-
-
-void View::updateMap(sf::RenderWindow& window, int blockSize){
-
-	//clear existing
-	map.clear();
-
-	//make new
-	//reference to piece.map
-	const std::vector<std::vector<Block>>& m = model.getMap();
-
-	//for each block in map, make rectangle
-	int r=0;
-	for (std::vector<Block> row : m){
-		int c=0;
-		for (Block b : row){
-			if (b.isOccupied()){
-				sf::RectangleShape rect(sf::Vector2f(blockSize, blockSize));
-				rect.setPosition((float) c*blockSize, (float) r*blockSize);
-				rect.setFillColor(b.getColor());
-				//map.push_back(sf::RectangleShape(rect)); //TODO is it needed to save piece rectangles into vector? Would it be needed in future?
-				window.draw(rect);
-
-
-			}
-			++c;
-		}
-		++r;
-	}
-}
-
 
 void View::map2rect(const std::vector<std::vector<Block>>& blockMap, Pos zeroPoint, int blockSize, std::vector<std::vector<sf::RectangleShape>>& rectMap){
 	//for each block in map, make rectangle
@@ -85,6 +24,8 @@ void View::map2rect(const std::vector<std::vector<Block>>& blockMap, Pos zeroPoi
 				sf::RectangleShape rect(sf::Vector2f(blockSize, blockSize));
 				rect.setPosition((float) (zeroPoint.c+c)*blockSize, (float) (zeroPoint.r+r)*blockSize);
 				rect.setFillColor(b.getColor());
+				rect.setOutlineColor(sf::Color(sf::Color::Green));
+				rect.setOutlineThickness(-1.f);
 				rectRow.push_back(rect);
 			}
 			++c;
@@ -96,29 +37,36 @@ void View::map2rect(const std::vector<std::vector<Block>>& blockMap, Pos zeroPoi
 
 
 void View::makePiece(){
-	map2rect(model.getPiece().getMap(), model.getPiece().getPos(), 25, piece);
+	map2rect(model.getPiece().getMap(), model.getPiece().getPos(), blockSize, piece);
 }
 void View::makeMap(){
 	Pos pos = {0,0};
-	map2rect(model.getMap(), pos, 25, map);
+	map2rect(model.getMap(), pos, blockSize, map);
 
 }
 void View::makeNextPiece(){
-
+	Pos mapsize = model.getSize();
+	Pos pos = {2, mapsize.c+1};
+	map2rect(model.getNextPiece().getMap(), pos, blockSize, nextPiece);
 }
 
 void View::drawAll(sf::RenderWindow& window){
-	// piece
-	for (auto row : piece){
-		for (sf::RectangleShape b : row){
-			window.draw(b);
-		}
-	}
 
-	// map
-	for (auto row : map){
-		for (sf::RectangleShape b : row){
-			window.draw(b);
+	//box around play area
+	sf::RectangleShape bx(sf::Vector2f(model.getSize().c*blockSize, model.getSize().r*blockSize));
+	bx.setFillColor(sf::Color(12,12,12,255));
+	bx.setOutlineColor(sf::Color(sf::Color::White));
+	bx.setOutlineThickness(1.f);
+	bx.setPosition(1.f, 1.f);
+	window.draw(bx);
+
+
+	std::vector<std::vector<sf::RectangleShape>>* objects[] = {&map, &piece, &nextPiece};
+	for (auto& obj : objects){
+		for (auto row : *obj){
+			for (sf::RectangleShape b : row){
+				window.draw(b);
+			}
 		}
 	}
 }

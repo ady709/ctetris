@@ -16,8 +16,7 @@ Model::Model(const int r, const int c) : rows(r), columns(c) {
 void Model::init(){
 	//delete pointed to objects if they exist
 	nextPiece = Piece();
-	//temporarily place the nextPiece to piece for testing
-	piece = nextPiece;
+	piece = Piece();
 
 	//init play area
 	map.clear();
@@ -64,6 +63,11 @@ const Piece& Model::getPiece() const{
 	return piece;
 }
 
+const Piece& Model::getNextPiece() const{
+	return nextPiece;
+
+}
+
 void Model::rotate(){
 	//TODO treat properly
 	Piece rotatedPiece = piece.getRotated();
@@ -98,15 +102,34 @@ void Model::rotate(){
 
 	if (fits)
 		piece = rotatedPiece;
-
 }
 
 const std::vector<std::vector<Block>>& Model::getMap() const{
 	return map;
 }
 
+const Pos Model::getSize() const{
+	return Pos {rows, columns};
+}
+
 void Model::tick(){
 	//TODO tick
+
+	//construct maps of pieces if none are already set //just for testing
+	if (piece.getMapNr() == 0) {
+		if (nextPiece.getMapNr() == 0) {
+			nextPiece.setMap(1);
+		}
+		piece.setMap(nextPiece.getMapNr());
+		piece.setPos(Pos(0,0));
+		int a = nextPiece.getMapNr(); //just for testing...
+		a++;
+		if (a>7) a=1; //...
+		nextPiece.setMap(a);
+
+		return;
+	}
+
 	bool landed = false;
 	Pos pos = piece.getPos();
 	Pos dim = piece.getDims();
@@ -127,7 +150,14 @@ void Model::tick(){
 					map[pos.r+r][pos.c+c] = piecemap[r][c];
 			}
 		}
-		piece = Piece();
+
+
+		piece.setMap(nextPiece.getMapNr());
+		piece.setPos(Pos(0,0));
+		int a = nextPiece.getMapNr(); //just for testing...
+		a++;
+		if (a>7) a=1; //...
+		nextPiece.setMap(a);
 
 	}
 }

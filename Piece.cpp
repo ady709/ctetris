@@ -10,48 +10,28 @@ using namespace tetris;
 
 Piece::Piece(){
 	//TODO shapes, random shape
-	width = 2;
-	height = 3;
+	width = 0;
+	height = 0;
 	init();
-	map[0][0] = Block(sf::Color(255,123,123,155));
-	map[1][0] = Block(sf::Color(123,255,123,155));
-	map[2][0] = Block(sf::Color(123,123,255,155));
-	map[1][1] = Block(sf::Color(123,123,255,155));
-	//map[3][0] = Block(sf::Color(123,123,255,155));
-	setLimits();
-
+	mapNr = 0;
 	r = 0;
 	c = 0;
 }
 
-Piece::Piece(int x, int y, int shape){
-	//TODO shapes
-	width = 2;
-	height = 3;
-	init();
-	map[0][0] = Block(sf::Color(255,123,123,255));
-	map[1][0] = Block(sf::Color(123,255,123,255));
-	map[1][1] = Block(sf::Color(123,123,255,255));
-	setLimits();
-
-	r = y;
-	c = x;
-}
-
 //construct from map and pos
 Piece::Piece(std::vector<std::vector<Block>> m, Pos pos){
-	map = m;
-	width = map[0].size();
-	height = map.size();
-	setLimits();
-	r = pos.r;
-	c= pos.c;
+        map = m;
+        width = map[0].size();
+        height = map.size();
+        setLimits();
+        r = pos.r;
+        c= pos.c;
 
 }
 
-bool Piece::fall(){
+
+void Piece::fall(){
 	++r;
-	return true;
 }
 
 void Piece::goLeft(){
@@ -123,10 +103,10 @@ void Piece::setLimits(){
 		limits.right.push_back(last);
 	}
 
-	std::cout << "Limits: bottom\n";
-	for (int i : limits.bottom)
-		std::cout << i << " ";
-	std::cout << std::endl;
+//	std::cout << "Limits: bottom\n";
+//	for (int i : limits.bottom)
+//		std::cout << i << " ";
+//	std::cout << std::endl;
 }
 
 const Limits& Piece::getLimits() const{
@@ -135,6 +115,7 @@ const Limits& Piece::getLimits() const{
 
 Piece Piece::getRotated() const{
 	//init rotated map
+
 	int newWidth = height;
 	int newHeight = width;
 	std::vector<std::vector<Block>> rotmap;
@@ -164,6 +145,103 @@ Piece Piece::getRotated() const{
 
 	return rotatedPiece;
 }
+
+
+void Piece::setMap(int mNr){
+
+	mapNr = mNr;
+	sf::Color col;
+	switch(mapNr){
+	case 0: //blank
+		width = 0;
+		height = 0;
+		init();
+		break;
+	case 1: //T
+		width = 2;
+		height = 3;
+		init();
+		col = sf::Color(224, 199, 36, 255);
+		map[0][0] = Block(col);
+		map[1][0] = Block(col);
+		map[1][1] = Block(col);
+		map[2][0] = Block(col);
+		break;
+	case 2: //L
+		width = 2;
+		height = 3;
+		init();
+		col = sf::Color(179, 10, 201, 255);
+		map[0][0] = Block(col);
+		map[1][0] = Block(col);
+		map[2][0] = Block(col);
+		map[2][1] = Block(col);
+		break;
+	case 3: //J
+		width = 2;
+		height = 3;
+		init();
+		col = sf::Color(255, 122, 69, 255);
+		map[0][1] = Block(col);
+		map[1][1] = Block(col);
+		map[2][1] = Block(col);
+		map[2][0] = Block(col);
+			break;
+	case 4: //I
+		width = 1;
+		height = 4;
+		init();
+		col = sf::Color(145, 10, 10, 255);
+		map[0][0] = Block(col);
+		map[1][0] = Block(col);
+		map[2][0] = Block(col);
+		map[3][0] = Block(col);
+		break;
+	case 5: //S
+		width = 2;
+		height = 3;
+		init();
+		col = sf::Color(73, 191, 73, 255);
+		map[0][0] = Block(col);
+		map[1][0] = Block(col);
+		map[1][1] = Block(col);
+		map[2][1] = Block(col);
+		break;
+	case 6: //revS
+		width = 2;
+		height = 3;
+		init();
+		col = sf::Color(82, 189, 222, 255);
+		map[0][1] = Block(col);
+		map[1][1] = Block(col);
+		map[1][0] = Block(col);
+		map[2][0] = Block(col);
+		break;
+	case 7: //box
+		width = 2;
+		height = 2;
+		init();
+		col = sf::Color(25, 31, 209, 255);
+		map[0][0] = Block(col);
+		map[1][0] = Block(col);
+		map[0][1] = Block(col);
+		map[1][1] = Block(col);
+		break;
+
+	}
+	setLimits();
+
+}
+
+int Piece::getMapNr() const{
+	return mapNr;
+}
+
+void Piece::setPos(Pos p){
+	r=p.r;
+	c=p.c;
+}
+
 
 
 

@@ -58,6 +58,7 @@ int main(){
 		//view.updateMap(window, blockSize);
 		view.makePiece();
 		view.makeMap();
+		view.makeNextPiece();
 		view.drawAll(window);
 
 		window.display();

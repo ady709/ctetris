@@ -12,7 +12,7 @@
 #include <vector>
 namespace tetris{
 
-struct Pos{int r; int c;};
+struct Pos{int r; int c; Pos(int rr, int cc) : r(rr), c(cc){} };
 struct Limits {
 	std::vector<int> left;
 	std::vector<int> bottom;
@@ -24,11 +24,14 @@ class Piece{
 public:
 	Piece();
 	Piece(std::vector<std::vector<Block>> map, Pos pos={0,0}); //construct from map
-	Piece(int x, int y, int shape);//??
+
+
+	void setMap(int MapNr=0);
+	int getMapNr() const;
 
 	void goLeft();
 	void goRight();
-	bool fall();
+	void fall();
 
 	void shiftPos(Pos pos);
 	Piece getRotated() const;
@@ -36,6 +39,7 @@ public:
 	const std::vector<std::vector<Block>>& getMap() const;
 	const Pos getPos() const;
 	const Pos getDims() const;
+	void setPos(Pos p);
 	const Limits& getLimits() const;
 
 
@@ -45,6 +49,7 @@ private:
 	int c;
 	int width;
 	int height;
+	int mapNr;
 	Limits limits;
 	void init();
 	void setLimits();

@@ -22,7 +22,9 @@ public:
 	void goRight();
 	void rotate();
 	const Piece& getPiece() const;
+	const Piece& getNextPiece() const;
 	const std::vector<std::vector<Block>>& getMap() const;
+	const Pos getSize() const;
 
 private:
 	std::vector<std::vector<Block>> map;
