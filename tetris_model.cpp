@@ -6,17 +6,20 @@
  */
 #include "tetris_model.h"
 #include "Piece.h"
-#include<iostream>
+#include <iostream>
 
 using namespace tetris;
 Model::Model(const int r, const int c) : rows(r), columns(c) {
-	init();
+	//init();
+	timer = 300;
 }
 
 void Model::init(){
 	//delete pointed to objects if they exist
-	nextPiece = Piece();
-	piece = Piece();
+	nextPiece = Piece(rand()%7+1);
+	piece = Piece(rand()%7+1);
+	piece.setPos(Pos(0,columns/2-piece.getDims().c/2));
+	timer = 300;
 
 	//init play area
 	map.clear();
@@ -112,23 +115,14 @@ const Pos Model::getSize() const{
 	return Pos {rows, columns};
 }
 
+const int32_t Model::getTimer() const{
+	return timer;
+}
+
 void Model::tick(){
 	//TODO tick
 
-	//construct maps of pieces if none are already set //just for testing
-	if (piece.getMapNr() == 0) {
-		if (nextPiece.getMapNr() == 0) {
-			nextPiece.setMap(1);
-		}
-		piece.setMap(nextPiece.getMapNr());
-		piece.setPos(Pos(0,0));
-		int a = nextPiece.getMapNr(); //just for testing...
-		a++;
-		if (a>7) a=1; //...
-		nextPiece.setMap(a);
 
-		return;
-	}
 
 	bool landed = false;
 	Pos pos = piece.getPos();
@@ -153,7 +147,7 @@ void Model::tick(){
 
 
 		piece.setMap(nextPiece.getMapNr());
-		piece.setPos(Pos(0,0));
+		piece.setPos(Pos(0,columns/2-piece.getDims().c/2));
 		int a = nextPiece.getMapNr(); //just for testing...
 		a++;
 		if (a>7) a=1; //...

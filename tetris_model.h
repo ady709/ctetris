@@ -25,6 +25,7 @@ public:
 	const Piece& getNextPiece() const;
 	const std::vector<std::vector<Block>>& getMap() const;
 	const Pos getSize() const;
+	const int32_t getTimer() const;
 
 private:
 	std::vector<std::vector<Block>> map;
@@ -32,7 +33,7 @@ private:
 	Piece nextPiece;
 	const int rows;
 	const int columns;
-
+	int32_t timer;
 };
 
 

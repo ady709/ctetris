@@ -17,14 +17,23 @@ const int nextPieceBlockSize = 25;
 const int nextPieceViewBlocks = 4;
 using namespace tetris;
 
+void tick();
+Model model(playRows, playColumns);
+sf::Clock tickc;
+
 int main(){
 
-	Model model(playRows, playColumns);
-
+	enum GameStatus {stopped, running, paused};
+	GameStatus gameStatus = stopped;
 
 	sf::RenderWindow window(sf::VideoMode(playColumns * blockSize + nextPieceBlockSize * nextPieceViewBlocks + 40, playRows * blockSize), "Tetris", sf::Style::Default);
 	View view(model);
 
+	//timers
+	sf::Clock leftrightc, upc, downc;
+
+	//keyboard booleans
+	bool spaceDown=false, left=false, right=false, down=false, up = false;
 
 	while (window.isOpen()){
 		sf::Event event;
@@ -32,25 +41,83 @@ int main(){
 			if (event.type == sf::Event::Closed){
 				window.close();
 			}
-
-	        //keyboard
-	        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)){
-	        	model.goLeft();
-	        }
-	        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)){
-	        	model.goRight();
-	        }
-	        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)){
-	        	model.tick();
-	        }
-	        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)){
-	        	model.rotate();
-	        }
-	        else {
-
-	        }
-
 		} //end event handling
+
+		//keyboard
+		//Space - Play / Pause
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !spaceDown){
+			if (gameStatus == stopped) {
+				model.init();
+				gameStatus = running;
+				tickc.restart();
+			} else if (gameStatus == running){
+				gameStatus = paused;
+			} else if (gameStatus == paused){
+				gameStatus = running;
+				tickc.restart();
+			}
+			std::cout << gameStatus << std::endl;
+			spaceDown = true;
+		}
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) spaceDown = false;
+
+
+		if (gameStatus == running) {
+			//Left
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && !left && !right){
+				left = true;
+				model.goLeft();
+				leftrightc.restart();
+			}
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+				left = false;
+			//Right
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !left && !right){
+				right = true;
+				model.goRight();
+				leftrightc.restart();
+			}
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+				right = false;
+			// Down - fall
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !down){
+				down = true;
+				tick(); //change timer instead of directly invoking tick
+				downc.restart();
+			}
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+				down = false;
+			//Up - rotate
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !up){
+				up = true;
+				model.rotate();
+				upc.restart();
+			}
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+				up = false;
+		}
+
+		//repeated controls
+		if (left && leftrightc.getElapsedTime().asMilliseconds() >= 200) {
+			model.goLeft();
+			leftrightc.restart();
+		}
+		if (right && leftrightc.getElapsedTime().asMilliseconds() >= 200) {
+			model.goRight();
+			leftrightc.restart();
+		}
+		if (down && downc.getElapsedTime().asMilliseconds() >= 100) {
+			tick();
+			downc.restart();
+		}
+		if (up && upc.getElapsedTime().asMilliseconds() >= 250) {
+			model.rotate();
+			upc.restart();
+		}
+
+		//tick
+		if (tickc.getElapsedTime().asMilliseconds() >= model.getTimer() && gameStatus == running)
+			tick();
 
 		window.clear();
 
@@ -72,10 +139,9 @@ int main(){
 	return 0;
 } //end main
 
-
-void drawPiece(Model& model){
-
-
+void tick(){
+	model.tick();
+	tickc.restart();
 }
 
 

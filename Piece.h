@@ -22,9 +22,9 @@ struct Limits {
 
 class Piece{
 public:
-	Piece();
+	//Piece();
 	Piece(std::vector<std::vector<Block>> map, Pos pos={0,0}); //construct from map
-
+	Piece(int mapNr=0);
 
 	void setMap(int MapNr=0);
 	int getMapNr() const;

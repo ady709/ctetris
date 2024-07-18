@@ -56,8 +56,8 @@ void View::drawAll(sf::RenderWindow& window){
 	sf::RectangleShape bx(sf::Vector2f(model.getSize().c*blockSize, model.getSize().r*blockSize));
 	bx.setFillColor(sf::Color(12,12,12,255));
 	bx.setOutlineColor(sf::Color(sf::Color::White));
-	bx.setOutlineThickness(1.f);
-	bx.setPosition(1.f, 1.f);
+	bx.setOutlineThickness(-1.f);
+	//bx.setPosition(1.f, 1.f);
 	window.draw(bx);
 
 

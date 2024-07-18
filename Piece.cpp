@@ -8,12 +8,8 @@
 #include <iostream>
 using namespace tetris;
 
-Piece::Piece(){
-	//TODO shapes, random shape
-	width = 0;
-	height = 0;
-	init();
-	mapNr = 0;
+Piece::Piece(int mapNr){
+	setMap(mapNr);
 	r = 0;
 	c = 0;
 }
