@@ -123,14 +123,14 @@ Piece Piece::getRotated() const{
 		rotmap.push_back(newrow);
 	}
 
-	std::cout << "newRows " << rotmap.size() << std::endl;
-	std::cout << "newColss " << rotmap[0].size() << std::endl;
+//	std::cout << "newRows " << rotmap.size() << std::endl;
+//	std::cout << "newColss " << rotmap[0].size() << std::endl;
 
 	//fill out the rotated map
 	for (int y=0; y<height; ++y){
-		std::cout << "y " << y << std::endl;
+		//std::cout << "y " << y << std::endl;
 		for (int x=0; x<width; ++x){
-			std::cout << "x " << x << std::endl;
+			//std::cout << "x " << x << std::endl;
 			rotmap[x][newWidth-y-1] = map[y][x];
 		}
 	}
@@ -148,11 +148,6 @@ void Piece::setMap(int mNr){
 	mapNr = mNr;
 	sf::Color col;
 	switch(mapNr){
-	case 0: //blank
-		width = 0;
-		height = 0;
-		init();
-		break;
 	case 1: //T
 		width = 2;
 		height = 3;
@@ -223,7 +218,12 @@ void Piece::setMap(int mNr){
 		map[0][1] = Block(col);
 		map[1][1] = Block(col);
 		break;
-
+	case 0: //blank
+	default:
+		width = 0;
+		height = 0;
+		init();
+		break;
 	}
 	setLimits();
 
@@ -238,6 +238,21 @@ void Piece::setPos(Pos p){
 	c=p.c;
 }
 
-
+size_t Piece::getLongestDim(){
+	size_t longest = 0;
+	int mapnr = 1;
+	while (true){
+		Piece p(mapnr);
+		Pos dims = p.getDims();
+		++mapnr;
+		if (dims.r == 0)
+			break;
+		if ((unsigned int)dims.r > longest)
+			longest = dims.r;
+		if ((unsigned int)dims.c > longest)
+			longest = dims.c;
+	}
+	return longest;
+}
 
 

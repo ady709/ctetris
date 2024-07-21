@@ -31,6 +31,9 @@ int main(){
 
 	//timers
 	sf::Clock leftrightc, upc, downc;
+	sf::Clock framec;
+	sf::Time framet = framec.restart();
+
 
 	//keyboard booleans
 	bool spaceDown=false, left=false, right=false, down=false, up = false;
@@ -56,7 +59,7 @@ int main(){
 				gameStatus = running;
 				tickc.restart();
 			}
-			std::cout << gameStatus << std::endl;
+			std::cout << "GameStatus: " << gameStatus << std::endl;
 			spaceDown = true;
 		}
 		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) spaceDown = false;
@@ -119,10 +122,12 @@ int main(){
 		if (tickc.getElapsedTime().asMilliseconds() >= model.getTimer() && gameStatus == running)
 			tick();
 
-		window.clear();
 
-		//view.updatePiece(window, blockSize);
-		//view.updateMap(window, blockSize);
+		window.clear();
+		//frame timer
+		framet = framec.restart();
+		//movepiece, delete makePiece()
+
 		view.makePiece();
 		view.makeMap();
 		view.makeNextPiece();

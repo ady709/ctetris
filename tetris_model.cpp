@@ -5,13 +5,16 @@
  *      Author: ady709
  */
 #include "tetris_model.h"
-#include "Piece.h"
 #include <iostream>
 
 using namespace tetris;
 Model::Model(const int r, const int c) : rows(r), columns(c) {
 	//init();
 	timer = 300;
+	rowsToRemove.clear();
+	removedRows = 0; score = 0; level = 1;
+	combos = nullptr;
+	combos_size = 0;
 }
 
 void Model::init(){
@@ -20,6 +23,13 @@ void Model::init(){
 	piece = Piece(rand()%7+1);
 	piece.setPos(Pos(0,columns/2-piece.getDims().c/2));
 	timer = 300;
+	rowsToRemove.clear();
+	removedRows = 0; score = 0; level = 1;
+
+	if (combos!=nullptr)
+		delete[] combos;
+	combos_size = Piece::getLongestDim();
+	combos = new int[combos_size] {0};
 
 	//init play area
 	map.clear();
@@ -120,14 +130,35 @@ const int32_t Model::getTimer() const{
 }
 
 void Model::tick(){
-	//TODO tick
+	//check for rowsToBeRemoved as found in previous tick
+	if (rowsToRemove.size() > 0) {
+		for (size_t rr : rowsToRemove){
+			auto it = map.begin()+rr;
+			map.erase(it);
+			std::vector<Block> newrow;
+			for (int i=0; i<columns; ++i){
+				newrow.push_back(Block());
+			}
+			map.insert(map.begin(), newrow);
+		}
+		score += rowsToRemove.size() * rowsToRemove.size();
+		++combos[rowsToRemove.size()-1];
+		rowsToRemove.clear();
+		//print to console
+		std::cout << "Score: " << score << "\n";
+		std::cout << "Combos: ";
+		for (size_t i=0; i<combos_size; ++i){
+			std::cout << i+1 << ": " << combos[i] << " ";
+		}
+		std::cout << std::endl;
+	}
 
 
 
 	bool landed = false;
 	Pos pos = piece.getPos();
 	Pos dim = piece.getDims();
-
+	//check if landed
 	for (int x=0; x<dim.c; ++x){
 		int py = pos.r + piece.getLimits().bottom[x]+1;
 		if (!(py<rows) || map[py][pos.c+x].isOccupied())
@@ -145,13 +176,21 @@ void Model::tick(){
 			}
 		}
 
+		//check for complete rows
+		rowsToRemove.clear();
+		for (size_t r=0; r<(unsigned int)rows; ++r){
+			int occupied=0;
+			for (Block b : map[r]){
+				if (b.isOccupied())	++occupied;
+			}
+			if (occupied == columns) rowsToRemove.push_back(r);
+		}
 
+
+		//next piece
 		piece.setMap(nextPiece.getMapNr());
 		piece.setPos(Pos(0,columns/2-piece.getDims().c/2));
-		int a = nextPiece.getMapNr(); //just for testing...
-		a++;
-		if (a>7) a=1; //...
-		nextPiece.setMap(a);
+		nextPiece.setMap(rand()%7+1);
 
 	}
 }

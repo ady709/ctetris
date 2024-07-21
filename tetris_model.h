@@ -34,6 +34,10 @@ private:
 	const int rows;
 	const int columns;
 	int32_t timer;
+	std::vector<size_t> rowsToRemove;
+	int removedRows, score, level;
+	int *combos;
+	size_t combos_size;
 };
 
 

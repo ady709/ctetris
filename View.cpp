@@ -7,7 +7,7 @@
 #include "View.h"
 using namespace tetris;
 
-View::View(Model& m) : model(m), blockSize(25) {
+View::View(Model& m) : model(m), blockSize(25), oldModelPos(Pos(-1,-1)), reqdPos(sf::Vector2f(-1,-1)) {
 
 }
 
@@ -38,6 +38,7 @@ void View::map2rect(const std::vector<std::vector<Block>>& blockMap, Pos zeroPoi
 
 void View::makePiece(){
 	map2rect(model.getPiece().getMap(), model.getPiece().getPos(), blockSize, piece);
+	//oldModelPos = model.getPiece().getPos();
 }
 void View::makeMap(){
 	Pos pos = {0,0};
@@ -72,7 +73,15 @@ void View::drawAll(sf::RenderWindow& window){
 }
 
 
+void View::movePiece(sf::Time frameTime){
+//	Pos newModelPos = model.getPiece().getPos();
+//	if (oldModelPos != newModelPos){
+//
+//	}
 
+	//newpiece = std::vector<std::vector<sf::RectangleShape>>;
+	//map2rect(model.getPiece().getMap(), model.getPiece().getPos(), blockSize, piece);
+}
 
 
 

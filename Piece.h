@@ -20,6 +20,7 @@ struct Limits {
 
 };
 
+
 class Piece{
 public:
 	//Piece();
@@ -28,6 +29,8 @@ public:
 
 	void setMap(int MapNr=0);
 	int getMapNr() const;
+
+	static size_t getLongestDim();
 
 	void goLeft();
 	void goRight();
