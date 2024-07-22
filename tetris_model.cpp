@@ -10,11 +10,14 @@
 using namespace tetris;
 Model::Model(const int r, const int c) : rows(r), columns(c) {
 	//init();
-	timer = 300;
+	//values are set in init(), initialization in constructor is just a fake....
+	initialTimer = 500;
+	timer = initialTimer;
 	rowsToRemove.clear();
-	removedRows = 0; score = 0; level = 1;
+	removedRows = 0; score = 0; level = 0;
 	combos = nullptr;
 	combos_size = 0;
+	landed = false;
 }
 
 void Model::init(){
@@ -22,7 +25,7 @@ void Model::init(){
 	nextPiece = Piece(rand()%7+1);
 	piece = Piece(rand()%7+1);
 	piece.setPos(Pos(0,columns/2-piece.getDims().c/2));
-	timer = 300;
+	timer = initialTimer;
 	rowsToRemove.clear();
 	removedRows = 0; score = 0; level = 1;
 
@@ -129,9 +132,14 @@ const int32_t Model::getTimer() const{
 	return timer;
 }
 
+const bool Model::isLanded() const{
+	return landed;
+}
+
 void Model::tick(){
 	//check for rowsToBeRemoved as found in previous tick
 	if (rowsToRemove.size() > 0) {
+		removedRows += (int) rowsToRemove.size();
 		for (size_t rr : rowsToRemove){
 			auto it = map.begin()+rr;
 			map.erase(it);
@@ -155,7 +163,7 @@ void Model::tick(){
 
 
 
-	bool landed = false;
+	landed = false;
 	Pos pos = piece.getPos();
 	Pos dim = piece.getDims();
 	//check if landed
@@ -191,6 +199,11 @@ void Model::tick(){
 		piece.setMap(nextPiece.getMapNr());
 		piece.setPos(Pos(0,columns/2-piece.getDims().c/2));
 		nextPiece.setMap(rand()%7+1);
+
+		//check level
+		level = removedRows/30 + 1;
+		//set timer
+		timer = initialTimer - (level-1) * 50;
 
 	}
 }

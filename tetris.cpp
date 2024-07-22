@@ -29,6 +29,7 @@ int main(){
 	sf::RenderWindow window(sf::VideoMode(playColumns * blockSize + nextPieceBlockSize * nextPieceViewBlocks + 40, playRows * blockSize), "Tetris", sf::Style::Default);
 	View view(model);
 
+
 	//timers
 	sf::Clock leftrightc, upc, downc;
 	sf::Clock framec;
@@ -51,6 +52,7 @@ int main(){
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !spaceDown){
 			if (gameStatus == stopped) {
 				model.init();
+				view.makePiece();
 				gameStatus = running;
 				tickc.restart();
 			} else if (gameStatus == running){
@@ -94,6 +96,7 @@ int main(){
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !up){
 				up = true;
 				model.rotate();
+				view.makePiece();
 				upc.restart();
 			}
 			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -122,13 +125,22 @@ int main(){
 		if (tickc.getElapsedTime().asMilliseconds() >= model.getTimer() && gameStatus == running)
 			tick();
 
+		//test
+		if (model.isLanded())
+			view.makePiece();
 
 		window.clear();
 		//frame timer
 		framet = framec.restart();
-		//movepiece, delete makePiece()
 
-		view.makePiece();
+
+		//movepiece and reset timer if animating
+		view.movePiece(framet);
+		if (view.isPieceMoveAnimated())
+			tickc.restart();
+
+
+
 		view.makeMap();
 		view.makeNextPiece();
 		view.drawAll(window);

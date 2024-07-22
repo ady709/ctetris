@@ -19,20 +19,25 @@ public:
 	void makePiece();
 	void makeMap();
 	void makeNextPiece();
-	void map2rect(const std::vector<std::vector<Block>>& blockMap, Pos zeroPoint, int blockSize, std::vector<std::vector<sf::RectangleShape>>& rectMap);
+	void map2rect(const std::vector<std::vector<Block>>& blockMap, sf::Vector2f zeroPoint, std::vector<std::vector<sf::RectangleShape>>& rectMap);
 	void drawAll(sf::RenderWindow& window);
 	void movePiece(sf::Time frameTime);
+	bool isPieceMoveAnimated(){return pieceMoveAnimating;};
 
 
 private:
 	Model& model;
 	std::vector<std::vector<sf::RectangleShape>> piece;
+	sf::Vector2f piecePos;
+	float pieceMoveSpeed;
+	bool pieceMoveAnimating;
+
 	std::vector<std::vector<sf::RectangleShape>> map;
 	std::vector<std::vector<sf::RectangleShape>> nextPiece;
-	int blockSize;
+	float blockSize;
 	Pos oldModelPos;
 	sf::Vector2f reqdPos;
-//	sf::Vector2f pieceMoveSpeed;
+
 };
 
 

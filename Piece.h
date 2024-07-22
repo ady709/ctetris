@@ -10,9 +10,24 @@
 
 #include "Block.h"
 #include <vector>
+#include <SFML/Graphics.hpp>
 namespace tetris{
 
-struct Pos{int r; int c; Pos(int rr, int cc) : r(rr), c(cc){} };
+struct Pos{
+	int r; int c;
+	Pos(int rr, int cc) : r(rr), c(cc){}
+	Pos() : r(0),c(1){};
+	sf::Vector2f operator*(float a) const {
+		sf::Vector2f p(1.f,1.f);
+		p.y = r*a;
+		p.x = c*a;
+		return p;
+	}
+	bool operator==(Pos p) const {
+		return r==p.r && c==p.c;
+	}
+};
+
 struct Limits {
 	std::vector<int> left;
 	std::vector<int> bottom;

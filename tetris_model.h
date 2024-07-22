@@ -26,6 +26,7 @@ public:
 	const std::vector<std::vector<Block>>& getMap() const;
 	const Pos getSize() const;
 	const int32_t getTimer() const;
+	const bool isLanded() const;
 
 private:
 	std::vector<std::vector<Block>> map;
@@ -34,10 +35,12 @@ private:
 	const int rows;
 	const int columns;
 	int32_t timer;
+	int32_t initialTimer;
 	std::vector<size_t> rowsToRemove;
 	int removedRows, score, level;
 	int *combos;
 	size_t combos_size;
+	bool landed;
 };
 
 
