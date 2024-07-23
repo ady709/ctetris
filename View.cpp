@@ -4,6 +4,7 @@
  *  Created on: Jul 9, 2024
  *      Author: ady709
  */
+
 #include "View.h"
 #include <iostream>
 
@@ -17,6 +18,8 @@ View::View(Model& m) : model(m) {
 
 	//map;
 	//nextPiece;
+	nextPiecePos = Pos(2, model.getSize().c+1)*25;
+
 	blockSize = 25.f;
 	oldModelPos = Pos(-1, -1);
 	reqdPos = sf::Vector2f(-1.f, -1.f);;
@@ -35,8 +38,8 @@ void View::map2rect(const std::vector<std::vector<Block>>& blockMap, sf::Vector2
 				sf::RectangleShape rect(sf::Vector2f(blockSize, blockSize));
 				rect.setPosition((float) (zeroPoint.x+c*blockSize), (float) (zeroPoint.y+r*blockSize));
 				rect.setFillColor(b.getColor());
-				rect.setOutlineColor(sf::Color(sf::Color::Green));
-				rect.setOutlineThickness(0.f);
+				rect.setOutlineColor(sf::Color(sf::Color::Black));
+				rect.setOutlineThickness(-0.f);
 				rectRow.push_back(rect);
 			}
 			++c;
@@ -58,16 +61,14 @@ void View::makeMap(){
 
 }
 void View::makeNextPiece(){
-	Pos mapsize = model.getSize();
-	Pos pos = {2, mapsize.c+1};
-	map2rect(model.getNextPiece().getMap(), pos*blockSize, nextPiece);
+	map2rect(model.getNextPiece().getMap(), nextPiecePos, nextPiece);
 }
 
 void View::drawAll(sf::RenderWindow& window){
 
 	//box around play area
 	sf::RectangleShape bx(sf::Vector2f(model.getSize().c*blockSize, model.getSize().r*blockSize));
-	bx.setFillColor(sf::Color(12,12,12,255));
+	bx.setFillColor(sf::Color(121,121,121,255));
 	bx.setOutlineColor(sf::Color(sf::Color::White));
 	bx.setOutlineThickness(-1.f);
 	//bx.setPosition(1.f, 1.f);
@@ -90,44 +91,46 @@ void View::movePiece(sf::Time frameTime){
 	static float speedy;
 
 	Pos newModelPos = model.getPiece().getPos();
-	if ( !(oldModelPos == newModelPos) ){
-		sf::Vector2f newPos = newModelPos * blockSize;
+	sf::Vector2f newPos = newModelPos * blockSize;
+
+	if ( !(piecePos == newPos) ){
+		pieceMoveAnimating = true;
+
 		//distance between old and new pos
 		float dx = (float) newPos.x - piecePos.x;
 		float dy = (float) newPos.y - piecePos.y;
 
 		//speed of movement
-		speedx = (dx / 3e4) * frameTime.asMicroseconds();
-		speedy = (dy / 3e4) * frameTime.asMicroseconds();
+		speedx = (dx / 6e4) * frameTime.asMicroseconds();
+		speedy = (dy / 6e4) * frameTime.asMicroseconds();
 
 		piecePos.x += speedx;
 		piecePos.y += speedy;
 
 		map2rect(model.getPiece().getMap(), piecePos, piece);
 
-		if (abs(newPos.x - piecePos.x) < 1 && abs(newPos.y - piecePos.y) <1 ){
+		if (abs(newPos.x - piecePos.x) < 1.f && abs(newPos.y - piecePos.y) <1.f ){
 			makePiece();
 		}
 
-
 		//indicate animation downwards to postpone ticks
-		if (oldModelPos.r != newModelPos.r){
-			pieceMoveAnimating = true;
-		}
-		else {
+		if (abs(newPos.y - piecePos.y) <1.f ){
 			pieceMoveAnimating = false;
 		}
 
 
 	}
 
-
-
-
-
-	//newpiece = std::vector<std::vector<sf::RectangleShape>>;
-	//map2rect(model.getPiece().getMap(), model.getPiece().getPos(), blockSize, piece);
 }
 
+
+void View::pieceOnNextPiece(){
+	piecePos.x = nextPiecePos.x;
+	piecePos.y = nextPiecePos.y;
+}
+
+void View::anim1(){
+
+}
 
 

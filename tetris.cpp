@@ -122,12 +122,16 @@ int main(){
 		}
 
 		//tick
-		if (tickc.getElapsedTime().asMilliseconds() >= model.getTimer() && gameStatus == running)
+		if (tickc.getElapsedTime().asMilliseconds() >= model.getTimer() && gameStatus == running){
 			tick();
 
+		}
+
 		//test
-		if (model.isLanded())
-			view.makePiece();
+		if (model.isLanded()){
+			view.pieceOnNextPiece();
+			model.clearLanded();
+		}
 
 		window.clear();
 		//frame timer

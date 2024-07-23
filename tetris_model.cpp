@@ -4,6 +4,7 @@
  *  Created on: Jul 7, 2024
  *      Author: ady709
  */
+
 #include "tetris_model.h"
 #include <iostream>
 
@@ -134,6 +135,10 @@ const int32_t Model::getTimer() const{
 
 const bool Model::isLanded() const{
 	return landed;
+}
+
+void Model::clearLanded(){
+	landed = false;
 }
 
 void Model::tick(){

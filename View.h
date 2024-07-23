@@ -23,6 +23,8 @@ public:
 	void drawAll(sf::RenderWindow& window);
 	void movePiece(sf::Time frameTime);
 	bool isPieceMoveAnimated(){return pieceMoveAnimating;};
+	void pieceOnNextPiece();
+	void anim1();
 
 
 private:
@@ -34,6 +36,7 @@ private:
 
 	std::vector<std::vector<sf::RectangleShape>> map;
 	std::vector<std::vector<sf::RectangleShape>> nextPiece;
+	sf::Vector2f nextPiecePos;
 	float blockSize;
 	Pos oldModelPos;
 	sf::Vector2f reqdPos;

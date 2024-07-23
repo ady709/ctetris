@@ -4,6 +4,7 @@
  *  Created on: Jul 7, 2024
  *      Author: ady709
  */
+
 #include "Block.h"
 using namespace tetris;
 Block::Block(sf::Color c){

@@ -27,6 +27,7 @@ public:
 	const Pos getSize() const;
 	const int32_t getTimer() const;
 	const bool isLanded() const;
+	void clearLanded();
 
 private:
 	std::vector<std::vector<Block>> map;
