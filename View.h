@@ -24,7 +24,9 @@ public:
 	void movePiece(sf::Time frameTime);
 	bool isPieceMoveAnimated(){return pieceMoveAnimating;};
 	void pieceOnNextPiece();
-	void anim1();
+	void setAnim(int animNr=1);
+	void doAnim(sf::Time frameTime);
+	bool isAnimRunning() {return animRunning;}
 
 
 private:
@@ -40,6 +42,11 @@ private:
 	float blockSize;
 	Pos oldModelPos;
 	sf::Vector2f reqdPos;
+
+	bool animRunning;
+	float initialAnimStep;
+	float animStep;
+	int currentAnimNr;
 
 };
 

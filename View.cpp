@@ -9,6 +9,8 @@
 #include <iostream>
 
 using namespace tetris;
+using std::cout;
+using std::endl;
 
 View::View(Model& m) : model(m) {
 	//piece;
@@ -23,6 +25,11 @@ View::View(Model& m) : model(m) {
 	blockSize = 25.f;
 	oldModelPos = Pos(-1, -1);
 	reqdPos = sf::Vector2f(-1.f, -1.f);;
+
+	animRunning = false;
+	initialAnimStep = 0.f;
+	animStep = 0.f;
+	currentAnimNr = 0;
 }
 
 void View::map2rect(const std::vector<std::vector<Block>>& blockMap, sf::Vector2f zeroPoint, std::vector<std::vector<sf::RectangleShape>>& rectMap){
@@ -113,12 +120,10 @@ void View::movePiece(sf::Time frameTime){
 			makePiece();
 		}
 
-		//indicate animation downwards to postpone ticks
-		if (abs(newPos.y - piecePos.y) <1.f ){
-			pieceMoveAnimating = false;
-		}
-
-
+	}
+	//resume ticks postponed during animation downwards
+	if (abs(newPos.y - piecePos.y) <1.f ){
+		pieceMoveAnimating = false;
 	}
 
 }
@@ -129,8 +134,55 @@ void View::pieceOnNextPiece(){
 	piecePos.y = nextPiecePos.y;
 }
 
-void View::anim1(){
 
+void View::doAnim(sf::Time frameTime){
+	static int64_t animTime = 5e5;
+
+	float delta = (float) (initialAnimStep/(float)animTime) * (float)frameTime.asMicroseconds();
+	animStep -= delta;
+
+	if (currentAnimNr==1 || currentAnimNr==2){
+
+		for (size_t rtr : model.getRowsToRemove()){
+			for (sf::RectangleShape& rect : map[rtr]){
+				if (currentAnimNr==1){
+					sf::Color c = rect.getFillColor();
+					sf::Color n(c.r, c.g, c.b, (uint8_t)animStep);
+					rect.setFillColor(n);
+				} else if (currentAnimNr==2){
+					sf::Vector2f size(rect.getSize());
+					sf::Vector2f pos(rect.getPosition());
+					size.x -= delta;
+					size.y -= delta;
+					pos.x += delta/2;
+					pos.y += delta/2;
+					rect.setSize(size);
+					rect.setPosition(pos);
+				}
+			}
+		}
+		//finish
+		if (animStep < 1.f){
+			animRunning = false;
+			model.removeRowsToRemove();
+		}
+	}
+
+}
+
+void View::setAnim(int animNr){
+	currentAnimNr = animNr;
+	switch (animNr) {
+	case 1:
+		initialAnimStep = 255.f;
+		break;
+	case 2:
+		initialAnimStep = blockSize;
+		break;
+	}
+
+	animStep = initialAnimStep;
+	animRunning = true;
 }
 
 

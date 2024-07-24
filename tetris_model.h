@@ -28,6 +28,9 @@ public:
 	const int32_t getTimer() const;
 	const bool isLanded() const;
 	void clearLanded();
+	const std::vector<size_t> getRowsToRemove() const {return rowsToRemove;}
+	void removeRowsToRemove();
+	const bool isGameOver() const {return gameOver;}
 
 private:
 	std::vector<std::vector<Block>> map;
@@ -42,6 +45,7 @@ private:
 	int *combos;
 	size_t combos_size;
 	bool landed;
+	bool gameOver;
 };
 
 

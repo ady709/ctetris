@@ -74,24 +74,18 @@ int main(){
 				model.goLeft();
 				leftrightc.restart();
 			}
-			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-				left = false;
 			//Right
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && !left && !right){
 				right = true;
 				model.goRight();
 				leftrightc.restart();
 			}
-			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-				right = false;
 			// Down - fall
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !down){
 				down = true;
 				tick(); //change timer instead of directly invoking tick
 				downc.restart();
 			}
-			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-				down = false;
 			//Up - rotate
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && !up){
 				up = true;
@@ -99,9 +93,17 @@ int main(){
 				view.makePiece();
 				upc.restart();
 			}
-			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-				up = false;
+
 		}
+		//clear keys
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+			left = false;
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+			right = false;
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			down = false;
+		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			up = false;
 
 		//repeated controls
 		if (left && leftrightc.getElapsedTime().asMilliseconds() >= 200) {
@@ -121,22 +123,21 @@ int main(){
 			upc.restart();
 		}
 
-		//tick
+		//tick ***************************************************************************************8
 		if (tickc.getElapsedTime().asMilliseconds() >= model.getTimer() && gameStatus == running){
 			tick();
-
+		}
+		//stop if game over
+		if (model.isGameOver()){
+			gameStatus = stopped;
+			continue;
 		}
 
-		//test
+		//move new piece over next piece for it to nicely slide to position from there
 		if (model.isLanded()){
 			view.pieceOnNextPiece();
 			model.clearLanded();
 		}
-
-		window.clear();
-		//frame timer
-		framet = framec.restart();
-
 
 		//movepiece and reset timer if animating
 		view.movePiece(framet);
@@ -144,14 +145,26 @@ int main(){
 			tickc.restart();
 
 
+		//re-draw window
+		window.clear();
 
-		view.makeMap();
+		//draw map
+		if (!view.isAnimRunning()) view.makeMap();
+		//animation of disappearing complete rows
+		if (model.getRowsToRemove().size() > 0 && !view.isAnimRunning()){
+			view.setAnim(model.getRowsToRemove().size()%2+1);
+		}
+		if (view.isAnimRunning()){
+			view.doAnim(framet);
+		}
+		//draw the rest
 		view.makeNextPiece();
 		view.drawAll(window);
 
 		window.display();
 
-
+		//frame timer
+		framet = framec.restart();
 
 	}//end main loop
 

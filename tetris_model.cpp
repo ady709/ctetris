@@ -19,6 +19,7 @@ Model::Model(const int r, const int c) : rows(r), columns(c) {
 	combos = nullptr;
 	combos_size = 0;
 	landed = false;
+	gameOver = false;
 }
 
 void Model::init(){
@@ -44,6 +45,8 @@ void Model::init(){
 		}
 		map.push_back(row);
 	}
+
+	gameOver = false;
 }
 
 
@@ -86,7 +89,6 @@ const Piece& Model::getNextPiece() const{
 }
 
 void Model::rotate(){
-	//TODO treat properly
 	Piece rotatedPiece = piece.getRotated();
 	Pos newdim = rotatedPiece.getDims();
 	//try to rotate around center
@@ -119,6 +121,7 @@ void Model::rotate(){
 
 	if (fits)
 		piece = rotatedPiece;
+
 }
 
 const std::vector<std::vector<Block>>& Model::getMap() const{
@@ -141,32 +144,35 @@ void Model::clearLanded(){
 	landed = false;
 }
 
+void Model::removeRowsToRemove(){
+	if (rowsToRemove.size() > 0) {
+			removedRows += (int) rowsToRemove.size();
+			for (size_t rr : rowsToRemove){
+				auto it = map.begin()+rr;
+				map.erase(it);
+				std::vector<Block> newrow;
+				for (int i=0; i<columns; ++i){
+					newrow.push_back(Block());
+				}
+				map.insert(map.begin(), newrow);
+			}
+			score += rowsToRemove.size() * rowsToRemove.size();
+			++combos[rowsToRemove.size()-1];
+			rowsToRemove.clear();
+			//print to console
+			std::cout << "Score: " << score << "\n";
+			std::cout << "Combos: ";
+			for (size_t i=0; i<combos_size; ++i){
+				std::cout << i+1 << ": " << combos[i] << " ";
+			}
+			std::cout << std::endl;
+		}
+
+}
+
 void Model::tick(){
 	//check for rowsToBeRemoved as found in previous tick
-	if (rowsToRemove.size() > 0) {
-		removedRows += (int) rowsToRemove.size();
-		for (size_t rr : rowsToRemove){
-			auto it = map.begin()+rr;
-			map.erase(it);
-			std::vector<Block> newrow;
-			for (int i=0; i<columns; ++i){
-				newrow.push_back(Block());
-			}
-			map.insert(map.begin(), newrow);
-		}
-		score += rowsToRemove.size() * rowsToRemove.size();
-		++combos[rowsToRemove.size()-1];
-		rowsToRemove.clear();
-		//print to console
-		std::cout << "Score: " << score << "\n";
-		std::cout << "Combos: ";
-		for (size_t i=0; i<combos_size; ++i){
-			std::cout << i+1 << ": " << combos[i] << " ";
-		}
-		std::cout << std::endl;
-	}
-
-
+	//removeRowsToRemove();
 
 	landed = false;
 	Pos pos = piece.getPos();
@@ -180,6 +186,12 @@ void Model::tick(){
 	if (!landed)
 		piece.fall();
 	else {
+		//check for game over
+		if (pos.r==0){
+			gameOver = true;
+			return;
+		}
+
 		//copy piece to playArea
 		const std::vector<std::vector<Block>>& piecemap = piece.getMap();
 		for (int r=0; r<dim.r; ++r){
@@ -204,6 +216,7 @@ void Model::tick(){
 		piece.setMap(nextPiece.getMapNr());
 		piece.setPos(Pos(0,columns/2-piece.getDims().c/2));
 		nextPiece.setMap(rand()%7+1);
+
 
 		//check level
 		level = removedRows/30 + 1;
