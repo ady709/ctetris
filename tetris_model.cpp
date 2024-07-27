@@ -27,6 +27,7 @@ void Model::init(){
 	nextPiece = Piece(rand()%7+1);
 	piece = Piece(rand()%7+1);
 	piece.setPos(Pos(0,columns/2-piece.getDims().c/2));
+
 	timer = initialTimer;
 	rowsToRemove.clear();
 	removedRows = 0; score = 0; level = 1;
@@ -189,6 +190,7 @@ void Model::tick(){
 		//check for game over
 		if (pos.r==0){
 			gameOver = true;
+			landed=false;
 			return;
 		}
 

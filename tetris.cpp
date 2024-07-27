@@ -53,6 +53,7 @@ int main(){
 			if (gameStatus == stopped) {
 				model.init();
 				view.makePiece();
+				view.pieceOnNextPiece();
 				gameStatus = running;
 				tickc.restart();
 			} else if (gameStatus == running){
@@ -130,7 +131,6 @@ int main(){
 		//stop if game over
 		if (model.isGameOver()){
 			gameStatus = stopped;
-			continue;
 		}
 
 		//move new piece over next piece for it to nicely slide to position from there

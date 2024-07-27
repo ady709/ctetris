@@ -41,7 +41,6 @@ private:
 	sf::Vector2f nextPiecePos;
 	float blockSize;
 	Pos oldModelPos;
-	sf::Vector2f reqdPos;
 
 	bool animRunning;
 	float initialAnimStep;

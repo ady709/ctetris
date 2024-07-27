@@ -24,7 +24,6 @@ View::View(Model& m) : model(m) {
 
 	blockSize = 25.f;
 	oldModelPos = Pos(-1, -1);
-	reqdPos = sf::Vector2f(-1.f, -1.f);;
 
 	animRunning = false;
 	initialAnimStep = 0.f;
