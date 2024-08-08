@@ -46,6 +46,7 @@ private:
 	size_t combos_size;
 	bool landed;
 	bool gameOver;
+	const bool fitsIn(const Piece& pc) const;
 };
 
 

@@ -9,6 +9,10 @@
 #include <iostream>
 
 using namespace tetris;
+using std::cout;
+using std::endl;
+using std::vector;
+
 Model::Model(const int r, const int c) : rows(r), columns(c) {
 	//init();
 	//values are set in init(), initialization in constructor is just a fake....
@@ -89,39 +93,47 @@ const Piece& Model::getNextPiece() const{
 
 }
 
-void Model::rotate(){
-	Piece rotatedPiece = piece.getRotated();
-	Pos newdim = rotatedPiece.getDims();
-	//try to rotate around center
-	Pos shift = {0, (newdim.r-newdim.c)/2};
-	rotatedPiece.shiftPos(shift);
+const bool Model::fitsIn(const Piece& pc) const{
 
-	//fits in map after rotation?
-	Pos shifts[] = {{0,0},{0,-1},{0,1},{0,-2} ,{0,2} }; //,{-1,1},{0,-2},{0,2},{-1,-2},{-1,2} };//,{-2,0},{-2,-2},{-2,2}};
-	bool fits = true;
-	for (Pos shift : shifts){
-		rotatedPiece.shiftPos(shift);
-		Pos newpos = rotatedPiece.getPos();
-		if (newpos.r<0 || newpos.c<0){
-			fits = false;
-			break;
-		}
-		fits = true;
-		for (int r=0; r<newdim.r; ++r){
-			for (int c=0; c<newdim.c; ++c){
-				if (newpos.r+newdim.r > rows || newpos.c+newdim.c > columns
-						|| (rotatedPiece.getMap()[r][c].isOccupied() && map[newpos.r+r][newpos.c+c].isOccupied()) ){
-					fits = false;
-					break;
-				}
-			if (!fits) break;
-			}
-		}
-		if (fits) break;
+	Pos newdim = pc.getDims();
+	Pos newpos = pc.getPos();
+
+	if (newpos.r<0 || newpos.c<0 || newpos.r+newdim.r > rows || newpos.c+newdim.c > columns){
+		return false;
 	}
 
-	if (fits)
-		piece = rotatedPiece;
+	for (int r=0; r<newdim.r; ++r){
+		for (int c=0; c<newdim.c; ++c){
+			if ( pc.getMap()[r][c].isOccupied() && map[newpos.r+r][newpos.c+c].isOccupied() ){
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+void Model::rotate(){
+	bool fits;
+	Piece rotatedPiece = piece.getRotated();
+	Pos newdim = rotatedPiece.getDims();
+	Pos shift = {0, (newdim.r-newdim.c)/2};
+	rotatedPiece.shiftPos(shift);
+	Pos firstPos = rotatedPiece.getPos();
+
+	//fits in map after rotation? Try to shift it's pos if not...
+	Pos shifts[] = {{0,0},{0,-1},{0,1},{0,-2} ,{0,2}
+				   ,{-1,0},{-1,-1},{-1,1},{-1,-2} ,{-1,2}
+				   ,{-2,0},{-2,-1},{-2,1},{-2,-2} ,{-2,2}
+					};
+
+	for (Pos shift : shifts){
+		rotatedPiece.setPos(firstPos);
+		rotatedPiece.shiftPos(shift);
+		fits = fitsIn(rotatedPiece);
+		if (!fits) continue; else break;
+	}
+
+	if (fits) piece = rotatedPiece;
 
 }
 
@@ -187,12 +199,12 @@ void Model::tick(){
 	if (!landed)
 		piece.fall();
 	else {
-		//check for game over
-		if (pos.r==0){
-			gameOver = true;
-			landed=false;
-			return;
-		}
+		//check for game over TODO: remove this?
+//		if (pos.r==0){
+//			gameOver = true;
+//			landed=false;
+//			return;
+//		}
 
 		//copy piece to playArea
 		const std::vector<std::vector<Block>>& piecemap = piece.getMap();
@@ -219,11 +231,18 @@ void Model::tick(){
 		piece.setPos(Pos(0,columns/2-piece.getDims().c/2));
 		nextPiece.setMap(rand()%7+1);
 
+		//check for gameover
+		if ( ! fitsIn(piece) ) {
+			gameOver = true;
+			piece = Piece();
+			nextPiece = Piece();
+		}
+
 
 		//check level
 		level = removedRows/30 + 1;
 		//set timer
 		timer = initialTimer - (level-1) * 50;
 
-	}
+	}// endif landed
 }

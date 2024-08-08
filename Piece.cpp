@@ -44,7 +44,6 @@ void Piece::shiftPos(Pos pos){
 	r+=pos.r;
 }
 
-
 const std::vector<std::vector<Block>>& Piece::getMap() const{
 	return map;
 }

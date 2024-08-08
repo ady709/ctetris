@@ -15,6 +15,9 @@ const int playColumns = 10;
 const int blockSize = 25;
 const int nextPieceBlockSize = 25;
 const int nextPieceViewBlocks = 4;
+const float initialSidePeriod = 200.f, initialDownPeriod = 100.f;
+float sidePeriod = initialSidePeriod, downPeriod = initialDownPeriod;
+
 using namespace tetris;
 
 void tick();
@@ -106,17 +109,32 @@ int main(){
 		if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 			up = false;
 
+		//clear periods
+		if (!left && !right){
+			sidePeriod = initialSidePeriod;
+		}
+		if (!down){
+			downPeriod = initialDownPeriod;
+		}
+
 		//repeated controls
-		if (left && leftrightc.getElapsedTime().asMilliseconds() >= 200) {
+		if (left && leftrightc.getElapsedTime().asMilliseconds() >= (int32_t) sidePeriod) {
 			model.goLeft();
+			sidePeriod -= (initialSidePeriod*0.2f);
+			if (sidePeriod < initialSidePeriod* 0.5f ) sidePeriod = initialSidePeriod*0.5f;
 			leftrightc.restart();
 		}
-		if (right && leftrightc.getElapsedTime().asMilliseconds() >= 200) {
+
+		if (right && leftrightc.getElapsedTime().asMilliseconds() >= (int32_t) sidePeriod) {
 			model.goRight();
+			sidePeriod -= (initialSidePeriod*0.2f);
+			if (sidePeriod < initialSidePeriod* 0.5f ) sidePeriod = initialSidePeriod*0.5f;
 			leftrightc.restart();
 		}
-		if (down && downc.getElapsedTime().asMilliseconds() >= 100) {
+		if (down && downc.getElapsedTime().asMilliseconds() >= (int32_t) downPeriod) {
 			tick();
+			downPeriod -= (initialDownPeriod*0.2f);
+			if (downPeriod < initialDownPeriod* 0.4f ) downPeriod = initialDownPeriod*0.4f;
 			downc.restart();
 		}
 		if (up && upc.getElapsedTime().asMilliseconds() >= 250) {
@@ -149,7 +167,9 @@ int main(){
 		window.clear();
 
 		//draw map
-		if (!view.isAnimRunning()) view.makeMap();
+		if (!view.isAnimRunning()) {
+			view.makeMap();
+		}
 		//animation of disappearing complete rows
 		if (model.getRowsToRemove().size() > 0 && !view.isAnimRunning()){
 			view.setAnim(model.getRowsToRemove().size()%2+1);
