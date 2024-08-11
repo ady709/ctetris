@@ -9,26 +9,79 @@
 #include <iostream>
 
 using namespace tetris;
+using std::to_string; // required
 using std::cout;
 using std::endl;
 
 View::View(Model& m) : model(m) {
+	blockSize = 25.f;
 	//piece;
 	piecePos = sf::Vector2f(-1.f, -1.f);
 	pieceMoveSpeed = 0.f;
 	pieceMoveAnimating = false;
 
-	//map;
 	//nextPiece;
-	nextPiecePos = Pos(2, model.getSize().c+1)*25;
+	nextPiecePos = Pos(2, model.getSize().c+1)*blockSize;
 
-	blockSize = 25.f;
+
 	oldModelPos = Pos(-1, -1);
 
 	animRunning = false;
 	initialAnimStep = 0.f;
 	animStep = 0.f;
 	currentAnimNr = 0;
+	
+	labelFont = sf::Font();
+	labelFont.loadFromFile("arial.ttf");
+
+	float nextToPlayField = (float) (blockSize*model.getSize().c)+blockSize;
+	//Texts
+	nextLabel = sf::Text("", labelFont, blockSize);
+	nextLabel.setFillColor(sf::Color(194, 21, 21));
+	nextLabel.setPosition(sf::Vector2f(nextToPlayField, (float) blockSize*0.7f));
+
+	float belowNext = (float) (Piece::getLongestDim())*blockSize + nextPiecePos.y + blockSize;
+
+	scoreLabelT = sf::Text("Score:", labelFont, blockSize);
+	scoreLabelT.setFillColor(sf::Color(194, 21, 21));
+	scoreLabelT.setOrigin(0.f, (float) blockSize);
+	scoreLabelT.setPosition(sf::Vector2f(nextToPlayField, belowNext));
+	
+	levelLabelT = sf::Text("Level:",labelFont, blockSize);
+	levelLabelT.setFillColor(sf::Color(194, 21, 21));
+	levelLabelT.setOrigin(0.f, (float) blockSize);
+	levelLabelT.setPosition(sf::Vector2f(nextToPlayField, belowNext + blockSize));
+
+	float nextToLabels = (float) nextToPlayField + getWidestLabel() + (float) blockSize*0.4f;
+
+	//Values
+	scoreLabelV = sf::Text("123", labelFont, blockSize*0.8f);
+	scoreLabelV.setFillColor(sf::Color(194, 21, 21));
+	scoreLabelV.setOrigin(0.f, (float) blockSize*0.8f);
+	scoreLabelV.setPosition(sf::Vector2f(nextToLabels, belowNext));
+	
+	levelLabelV = sf::Text("123",labelFont, blockSize*0.8f);
+	levelLabelV.setFillColor(sf::Color(194, 21, 21));
+	levelLabelV.setOrigin(0.f, (float) blockSize*0.8f);
+	levelLabelV.setPosition(sf::Vector2f(nextToLabels, belowNext + blockSize));
+
+	// sf::Text rowsLabel;
+	// sf::Text singleLabel;
+	// sf::Text doubleLabel;
+	// sf::Text trippleLabel;
+	// sf::Text tetrisLabel;
+	
+}
+
+float View::getWidestLabel() const{
+	//sf::Text textLabels[] = {scoreLabelT, levelLabelT};
+	float longestText = 0;
+	float length = 0;
+	for (auto t : textLabels){
+		length = t->getGlobalBounds().width;
+		if (length > longestText) longestText = length;
+	}
+	return longestText;
 }
 
 void View::map2rect(const std::vector<std::vector<Block>>& blockMap, sf::Vector2f zeroPoint, std::vector<std::vector<sf::RectangleShape>>& rectMap){
@@ -80,7 +133,7 @@ void View::drawAll(sf::RenderWindow& window){
 	//bx.setPosition(1.f, 1.f);
 	window.draw(bx);
 
-
+	//draw all rectangles, using pointer array to loop through all objects
 	std::vector<std::vector<sf::RectangleShape>>* objects[] = {&map, &piece, &nextPiece};
 	for (auto& obj : objects){
 		for (auto row : *obj){
@@ -89,6 +142,20 @@ void View::drawAll(sf::RenderWindow& window){
 			}
 		}
 	}
+
+	//draw texts
+	//Next:
+	nextLabel.setString("Next:");
+	window.draw(nextLabel);
+	//score
+	scoreLabelV.setString(to_string(model.getScore()));
+	window.draw(scoreLabelT);
+	window.draw(scoreLabelV);
+	//Level
+	levelLabelV.setString(to_string(model.getLevel()));
+	window.draw(levelLabelT);
+	window.draw(levelLabelV);
+
 }
 
 

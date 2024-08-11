@@ -145,6 +145,7 @@ const Pos Model::getSize() const{
 	return Pos {rows, columns};
 }
 
+
 const int32_t Model::getTimer() const{
 	return timer;
 }

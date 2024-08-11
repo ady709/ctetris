@@ -8,15 +8,15 @@
 #include <SFML/Graphics.hpp>
 #include "tetris_model.h"
 #include "View.h"
+#include "Piece.h"
 
 //game and view properties
 const int playRows = 21;
 const int playColumns = 10;
 const int blockSize = 25;
-const int nextPieceBlockSize = 25;
-const int nextPieceViewBlocks = 4;
 const float initialSidePeriod = 200.f, initialDownPeriod = 100.f;
 float sidePeriod = initialSidePeriod, downPeriod = initialDownPeriod;
+
 
 using namespace tetris;
 
@@ -28,9 +28,11 @@ int main(){
 
 	enum GameStatus {stopped, running, paused};
 	GameStatus gameStatus = stopped;
-
-	sf::RenderWindow window(sf::VideoMode(playColumns * blockSize + nextPieceBlockSize * nextPieceViewBlocks + 40, playRows * blockSize), "Tetris", sf::Style::Default);
+	
 	View view(model);
+	unsigned int windowWidth = (playColumns * blockSize) + (Piece::getLongestDim()*blockSize) + (view.getWidestLabel()) + 0;
+	sf::RenderWindow window(sf::VideoMode(windowWidth, playRows * blockSize), "Tetris", sf::Style::Default);
+	
 
 
 	//timers

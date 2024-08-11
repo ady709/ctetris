@@ -9,7 +9,6 @@
 #define SRC_VIEW_H_
 
 #include "tetris_model.h"
-//#include "Piece.h"
 namespace tetris{
 
 class View{
@@ -27,6 +26,7 @@ public:
 	void setAnim(int animNr=1);
 	void doAnim(sf::Time frameTime);
 	bool isAnimRunning() {return animRunning;}
+	float getWidestLabel() const;
 
 
 private:
@@ -47,6 +47,18 @@ private:
 	float animStep;
 	int currentAnimNr;
 
+	sf::Font labelFont;
+	sf::Text nextLabel;
+	sf::Text scoreLabelT;
+	sf::Text scoreLabelV;
+	sf::Text levelLabelT;
+	sf::Text levelLabelV;
+	sf::Text rowsLabel;
+	sf::Text singleLabel;
+	sf::Text doubleLabel;
+	sf::Text trippleLabel;
+	sf::Text tetrisLabel;
+	sf::Text* textLabels[2] = {&scoreLabelT, &levelLabelT};
 };
 
 

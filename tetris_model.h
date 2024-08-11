@@ -24,19 +24,26 @@ public:
 	const Piece& getPiece() const;
 	const Piece& getNextPiece() const;
 	const std::vector<std::vector<Block>>& getMap() const;
+	
+	/*Returns dims of the playfield in rows and columns
+	  Return type is Pos, members of Pos are .r and .c*/
 	const Pos getSize() const;
+	
 	const int32_t getTimer() const;
 	const bool isLanded() const;
 	void clearLanded();
 	const std::vector<size_t> getRowsToRemove() const {return rowsToRemove;}
 	void removeRowsToRemove();
 	const bool isGameOver() const {return gameOver;}
+	const int getScore() const {return score;}
+	const int getLevel() const {return level;}
+
 
 private:
 	std::vector<std::vector<Block>> map;
 	Piece piece;
-	Piece nextPiece;
 	const int rows;
+	Piece nextPiece;
 	const int columns;
 	int32_t timer;
 	int32_t initialTimer;
