@@ -1,0 +1,33 @@
+exe=ctetris
+object_files=obj/Block.o obj/Piece.o obj/View.o obj/tetris.o obj/tetris_model.o
+sfml=-lsfml-graphics -lsfml-window -lsfml-system
+
+build : $(exe)
+
+$(exe) : $(object_files)
+	g++ -o $(exe) $(object_files) $(sfml)
+	chmod ugo+x $(exe)
+	@echo "Done"
+
+obj/Block.o : src/Block.cpp src/Block.h
+	g++ -c -o obj/Block.o src/Block.cpp
+
+obj/Piece.o : src/Piece.cpp src/Piece.h src/Block.h
+	g++ -c -o obj/Piece.o src/Piece.cpp
+
+obj/View.o : src/View.cpp src/View.h src/tetris_model.h
+	g++ -c -o obj/View.o src/View.cpp
+
+obj/tetris.o : src/tetris.cpp src/tetris_model.h src/View.h src/Piece.h
+	g++ -c -o obj/tetris.o src/tetris.cpp
+
+obj/tetris_model.o : src/tetris_model.cpp src/tetris_model.h src/Block.h src/Piece.h
+	g++ -c -o obj/tetris_model.o src/tetris_model.cpp
+
+clean :
+	@echo "Cleaning object files"
+	rm $(object_files)
+
+clean_build : clean build
+
+
