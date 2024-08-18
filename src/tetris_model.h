@@ -37,6 +37,9 @@ public:
 	const bool isGameOver() const {return gameOver;}
 	const int getScore() const {return score;}
 	const int getLevel() const {return level;}
+	const int getRemovedRows() const {return removedRows;}
+	const size_t getCombosSize() const {return combos_size;}
+	const int* getCombos() const {return combos;}
 
 
 private:

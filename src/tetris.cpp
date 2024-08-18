@@ -9,6 +9,7 @@
 #include "tetris_model.h"
 #include "View.h"
 #include "Piece.h"
+#include<ctime>
 
 //game and view properties
 const int playRows = 21;
@@ -56,6 +57,7 @@ int main(){
 		//Space - Play / Pause
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && !spaceDown){
 			if (gameStatus == stopped) {
+				srand(time(0));
 				model.init();
 				view.makePiece();
 				view.pieceOnNextPiece();

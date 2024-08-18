@@ -7,9 +7,14 @@
 
 #include "View.h"
 #include <iostream>
-
+#include <string>
+#include <vector>
+#include <sstream>
 using namespace tetris;
 using std::to_string; // required
+using std::vector; //required
+using std::string; //required
+using std::stringstream; //required
 using std::cout;
 using std::endl;
 
@@ -32,7 +37,19 @@ View::View(Model& m) : model(m) {
 	currentAnimNr = 0;
 	
 	labelFont = sf::Font();
-	labelFont.loadFromFile("arial.ttf");
+	//labelFont.loadFromFile("arial.ttf");
+	vector<string> fontList = {	"font.ttf",
+								"/usr/share/fonts/truetype/freefont/FreeSerifBold.ttf",
+								"/usr/share/fonts/truetype/freefont/FreeSansOblique.ttf",
+								"/usr/share/fonts/truetype/freefont/FreeSerif.ttf"};
+	bool fontLoaded = false;
+	for (string f : fontList){
+		if (labelFont.loadFromFile(f)) {
+			
+			break;
+		}
+	}
+	if (!fontLoaded) cout << "Error loading font!";
 
 	float nextToPlayField = (float) (blockSize*model.getSize().c)+blockSize;
 	//Texts
@@ -40,32 +57,66 @@ View::View(Model& m) : model(m) {
 	nextLabel.setFillColor(sf::Color(194, 21, 21));
 	nextLabel.setPosition(sf::Vector2f(nextToPlayField, (float) blockSize*0.7f));
 
-	float belowNext = (float) (Piece::getLongestDim())*blockSize + nextPiecePos.y + blockSize;
+	vector<float> rowPos;
+	rowPos.push_back((float) (Piece::getLongestDim())*blockSize + nextPiecePos.y + blockSize);
+	size_t currentPos = 0;
 
 	scoreLabelT = sf::Text("Score:", labelFont, blockSize);
 	scoreLabelT.setFillColor(sf::Color(194, 21, 21));
 	scoreLabelT.setOrigin(0.f, (float) blockSize);
-	scoreLabelT.setPosition(sf::Vector2f(nextToPlayField, belowNext));
-	
+	scoreLabelT.setPosition(sf::Vector2f(nextToPlayField, rowPos[currentPos]));
+	++currentPos;
+	rowPos.push_back(rowPos[currentPos-1]+(float)blockSize);
+
 	levelLabelT = sf::Text("Level:",labelFont, blockSize);
 	levelLabelT.setFillColor(sf::Color(194, 21, 21));
 	levelLabelT.setOrigin(0.f, (float) blockSize);
-	levelLabelT.setPosition(sf::Vector2f(nextToPlayField, belowNext + blockSize));
+	levelLabelT.setPosition(sf::Vector2f(nextToPlayField, rowPos[currentPos]));
+	++currentPos;
+	rowPos.push_back(rowPos[currentPos-1]+(float)blockSize);
+	
+	rowsLabelT = sf::Text("Total rows:",labelFont, blockSize);
+	rowsLabelT.setFillColor(sf::Color(194, 21, 21));
+	rowsLabelT.setOrigin(0.f, (float) blockSize);
+	rowsLabelT.setPosition(sf::Vector2f(nextToPlayField, rowPos[currentPos]));
+	++currentPos;
 
 	float nextToLabels = (float) nextToPlayField + getWidestLabel() + (float) blockSize*0.4f;
-
 	//Values
-	scoreLabelV = sf::Text("123", labelFont, blockSize*0.8f);
+	currentPos = 0;
+	scoreLabelV = sf::Text("123",labelFont, blockSize*0.8f);
 	scoreLabelV.setFillColor(sf::Color(194, 21, 21));
 	scoreLabelV.setOrigin(0.f, (float) blockSize*0.8f);
-	scoreLabelV.setPosition(sf::Vector2f(nextToLabels, belowNext));
-	
+	scoreLabelV.setPosition(sf::Vector2f(nextToLabels, rowPos[currentPos]));
+	++currentPos;
+
 	levelLabelV = sf::Text("123",labelFont, blockSize*0.8f);
 	levelLabelV.setFillColor(sf::Color(194, 21, 21));
 	levelLabelV.setOrigin(0.f, (float) blockSize*0.8f);
-	levelLabelV.setPosition(sf::Vector2f(nextToLabels, belowNext + blockSize));
+	levelLabelV.setPosition(sf::Vector2f(nextToLabels, rowPos[currentPos]));
+	++currentPos;
 
-	// sf::Text rowsLabel;
+	rowsLabelV = sf::Text("123",labelFont, blockSize*0.8f);
+	rowsLabelV.setFillColor(sf::Color(194, 21, 21));
+	rowsLabelV.setOrigin(0.f, (float) blockSize*0.8f);
+	rowsLabelV.setPosition(sf::Vector2f(nextToLabels, rowPos[currentPos]));
+	++currentPos;
+
+	//combos
+	rowPos.push_back(rowPos[currentPos-1]+(float)blockSize);
+
+	combosT = sf::Text("Combos (1,2,3,4..)",labelFont, blockSize);
+	combosT.setFillColor(sf::Color(194, 21, 21));
+	combosT.setOrigin(0.f, (float) blockSize);
+	combosT.setPosition(sf::Vector2f(nextToPlayField, rowPos[currentPos]));
+	++currentPos;
+	rowPos.push_back(rowPos[currentPos-1]+(float)blockSize);
+
+	combosV = sf::Text("1,2,3,4",labelFont, blockSize);
+	combosV.setFillColor(sf::Color(194, 21, 21));
+	combosV.setOrigin(0.f, (float) blockSize);
+	combosV.setPosition(sf::Vector2f(nextToPlayField+blockSize, rowPos[currentPos]));
+
 	// sf::Text singleLabel;
 	// sf::Text doubleLabel;
 	// sf::Text trippleLabel;
@@ -155,7 +206,20 @@ void View::drawAll(sf::RenderWindow& window){
 	levelLabelV.setString(to_string(model.getLevel()));
 	window.draw(levelLabelT);
 	window.draw(levelLabelV);
-
+	//rows removed
+	rowsLabelV.setString(to_string(model.getRemovedRows()));
+	window.draw(rowsLabelT);
+	window.draw(rowsLabelV);
+	//Combos
+	stringstream ss;
+	for (size_t i=0; i<model.getCombosSize(); ++i){
+		ss << model.getCombos()[i];
+		if (i<model.getCombosSize()-1)
+			ss << ",";
+	}
+	combosV.setString(ss.str());
+	window.draw(combosT);
+	window.draw(combosV);
 }
 
 

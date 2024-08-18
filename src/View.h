@@ -53,12 +53,16 @@ private:
 	sf::Text scoreLabelV;
 	sf::Text levelLabelT;
 	sf::Text levelLabelV;
-	sf::Text rowsLabel;
-	sf::Text singleLabel;
-	sf::Text doubleLabel;
-	sf::Text trippleLabel;
-	sf::Text tetrisLabel;
-	sf::Text* textLabels[2] = {&scoreLabelT, &levelLabelT};
+	sf::Text rowsLabelT;
+	sf::Text rowsLabelV;
+	sf::Text combosT;
+	sf::Text combosV;
+
+	//sf::Text singleLabel;
+	//sf::Text doubleLabel;
+	//sf::Text trippleLabel;
+	//sf::Text tetrisLabel;
+	sf::Text* textLabels[4] = {&scoreLabelT, &levelLabelT, &rowsLabelT, &combosT};
 };
 
 
