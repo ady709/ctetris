@@ -1,5 +1,5 @@
 exe:=ctetris.exe
-object_files:=obj/Block.o obj/Piece.o obj/View.o obj/tetris.o obj/tetris_model.o
+object_files:=obj/Block.o obj/Piece.o obj/View.o obj/tetris.o obj/tetris_model.o obj/score.o
 sfml:=-lsfml-graphics -lsfml-window -lsfml-system
 sfml_include:=C:/Users/ady70/CPP/SFML-2.6.1/include
 sfml_lib:=C:/Users/ady70/CPP/SFML-2.6.1/lib
@@ -30,11 +30,14 @@ obj/Piece.o : src/Piece.cpp src/Piece.h src/Block.h
 obj/View.o : src/View.cpp src/View.h src/tetris_model.h
 	g++ -c -o obj/View.o src/View.cpp -I$(sfml_include) -DSFML_STATIC
 
-obj/tetris.o : src/tetris.cpp src/tetris_model.h src/View.h
+obj/tetris.o : src/tetris.cpp src/tetris_model.h src/View.h src/Score.h
 	g++ -c -o obj/tetris.o src/tetris.cpp -I$(sfml_include) -DSFML_STATIC
 
 obj/tetris_model.o : src/tetris_model.cpp src/tetris_model.h src/Block.h src/Piece.h
 	g++ -c -o obj/tetris_model.o src/tetris_model.cpp -I$(sfml_include) -DSFML_STATIC
+
+obj/score.o : src/Score.cpp src/Score.h
+	g++ -c -o obj/Score.o src/Score.cpp -I$(sfml_include) -DSFML_STATIC
 
 clean :
 ifeq ($(existing_files),)

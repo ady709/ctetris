@@ -9,6 +9,9 @@
 #define SRC_VIEW_H_
 
 #include "tetris_model.h"
+#include <SFML/Graphics.hpp>
+#include <string>
+
 namespace tetris{
 
 class View{
@@ -27,7 +30,12 @@ public:
 	void doAnim(sf::Time frameTime);
 	bool isAnimRunning() {return animRunning;}
 	float getWidestLabel() const;
-
+	bool inputBox(sf::RenderWindow& window, std::string message, std::string& target);
+	void updateHighScoreLabels(std::vector<std::string> lines);
+	void mouseInHighScore(sf::Vector2f mousePos);
+	int selectHighScore();
+	int getSelectedHighScore() {return highScoreSelected;}
+	void setNextLabelText(const char* s) {nextLabel.setString(s);}
 
 private:
 	Model& model;
@@ -57,12 +65,14 @@ private:
 	sf::Text rowsLabelV;
 	sf::Text combosT;
 	sf::Text combosV;
-
-	//sf::Text singleLabel;
-	//sf::Text doubleLabel;
-	//sf::Text trippleLabel;
-	//sf::Text tetrisLabel;
 	sf::Text* textLabels[4] = {&scoreLabelT, &levelLabelT, &rowsLabelT, &combosT};
+
+	sf::Text highScoreLabel;
+	static const int highScoreRows = 10;
+	sf::Text highScore[highScoreRows];	
+	int highScoreUsed;
+	int highScoreHighlighted;
+	int highScoreSelected;
 };
 
 

@@ -2,3 +2,5 @@ obj/*
 *.exe
 ctetris
 makefile
+score.dat
+src/.vscode/
